@@ -1,0 +1,29 @@
+{
+  "project": "exp984-reborn-wargod",
+  "created_at": "2026-04-07T05:19:58.594833+00:00",
+  "github_repo": "ykzhujiang/exp984-reborn-wargod",
+  "config": {
+    "theme": "重生之AI战神：前世特种兵+AI天才李战被合伙人背叛致死，重生回2021年，带着未来5年AI记忆+军人身手，创业复仇",
+    "genre": "action",
+    "style": "realistic",
+    "duration": 120,
+    "characters": 4,
+    "setting": "中国·2021·都市",
+    "appearance": "east-asian"
+  },
+  "status": "not_started",
+  "steps": {
+    "step1b": {
+      "status": "not_started"
+    },
+    "step3": {
+      "status": "not_started"
+    },
+    "step4": {
+      "status": "not_started"
+    },
+    "step6": {
+      "status": "not_started"
+    }
+  }
+}
