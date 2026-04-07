@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ep01</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --card-bg: #161b22;
+  --card-border: #30363d;
+  --text: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --dialogue-bg: rgba(88,166,255,0.08);
+  --dialogue-color: #79c0ff;
+  --part-num-color: #f0883e;
+  --camera-bg: rgba(139,148,158,0.08);
+  --header-gradient: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px;
+}
+/* Header */
+.page-header {
+  background: var(--header-gradient);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.page-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #58a6ff, #bc8cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.meta-tag {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: rgba(88,166,255,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(88,166,255,0.2);
+}
+/* Collapsible sections */
+details {
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: var(--card-bg);
+}
+details summary {
+  padding: 14px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+}
+details summary:hover { color: var(--text); }
+details[open] summary { border-bottom: 1px solid var(--card-border); }
+.section-body {
+  padding: 12px 16px;
+}
+/* Character items */
+.char-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 14px;
+}
+.char-item:last-child { border-bottom: none; }
+.char-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+.char-desc {
+  display: block;
+  margin-top: 4px;
+  margin-left: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+/* Scene items */
+.scene-item {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  font-size: 14px;
+}
+.scene-item:last-child { border-bottom: none; }
+.scene-desc {
+  display: block;
+  margin-top: 4px;
+  margin-left: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+/* Segment card */
+.segment-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.segment-card:hover {
+  border-color: rgba(88,166,255,0.4);
+}
+.segment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 8px;
+}
+.segment-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.segment-dur {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(240,136,62,0.12);
+  color: var(--part-num-color);
+}
+.segment-meta {
+  padding: 0 16px 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+/* Physical state inside segment */
+.segment-card .physical-state {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  border-top: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(139,148,158,0.03);
+}
+.segment-card .physical-state summary {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.ps-item {
+  padding: 4px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+/* Parts */
+.parts-container {
+  padding: 10px 16px 6px;
+}
+.part-line {
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.8;
+  border-bottom: 1px solid rgba(48,54,61,0.3);
+}
+.part-line:last-child { border-bottom: none; }
+.part-num {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--part-num-color);
+  background: rgba(240,136,62,0.1);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.char-tag {
+  font-weight: 600;
+}
+.dialogue {
+  color: var(--dialogue-color);
+  background: var(--dialogue-bg);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-style: italic;
+}
+/* Camera */
+.camera-line {
+  padding: 8px 16px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--camera-bg);
+  border-top: 1px solid var(--card-border);
+}
+/* Stats */
+.stats-bar {
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.stats-bar span {
+  margin: 0 8px;
+}
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .container { padding: 10px; }
+  .page-header { padding: 18px 14px; }
+  .page-header h1 { font-size: 19px; }
+  .part-line { font-size: 14px; }
+  .segment-header { padding: 10px 12px 6px; }
+  .parts-container { padding: 8px 12px 4px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="page-header">
+  <h1>ep01</h1>
+  <div class="meta-tags">
+    <span class="meta-tag">🎬 realistic</span>
+    <span class="meta-tag">🌍 中国·2021·都市</span>
+    <span class="meta-tag">🎨 cinematic action-drama, modern urban Chi...</span>
+    <span class="meta-tag">📊 16 segments</span>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <span>👤 5 角色</span>
+  <span>🏞️ 6 场景</span>
+  <span>🎬 16 分镜</span>
+</div>
+
+<details>
+  <summary>👤 角色设定 (5)</summary>
+  <div class="section-body"><div class="char-item"><span class="char-dot" style="background:#e74c3c"></span><strong>[李战]</strong><span class="char-desc">28岁男性，身高180cm匀称偏瘦但肌肉线条明显的体型，小麦色皮肤，方正脸庞棱角分明，浓眉剑目鼻梁高挺薄唇微抿，黑色短碎发额前略长自然偏分，左耳后有一条2cm旧疤痕（军队遗留）。穿着随场景变化。目光平静但偶尔闪过锐利杀意。手指修长但指关节粗大（格斗痕迹）。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#3498db"></span><strong>[苏薇]</strong><span class="char-desc">26岁女性，身高165cm纤细体型，皮肤白皙偏暖调，鹅蛋脸大眼睛双眼皮睫毛浓密，鼻子小巧嘴唇饱满，黑色中长直发披肩略毛躁（不打理），穿米白色oversized卫衣搭配牛仔裤白色运动鞋，左手腕戴一只旧电子表。表情认真专注时微皱眉，笑起来露虎牙。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#2ecc71"></span><strong>[赵鹏]</strong><span class="char-desc">30岁男性，身高176cm微胖体型，白皙皮肤保养良好，圆脸笑起来亲和但眼底没有笑意，小眼睛单眼皮，头发黑色梳理整齐偏分抹了发蜡，穿深蓝色修身西装内搭浅蓝衬衫不系领带，戴银色欧米茄手表，皮鞋锃亮。右手食指习惯性转笔。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#f39c12"></span><strong>[老周]</strong><span class="char-desc">50岁男性，身高172cm圆润体型，古铜色皮肤脸上有岁月皱纹，国字脸浓眉大眼鼻头圆润，花白短发寸头，穿灰色polo衫搭卡其色休闲裤棕色皮带，左手戴沉旧的金表。表情严肃时威严，但偶尔露出爽朗笑容。</span></div>
+<div class="char-item"><span class="char-dot" style="background:#9b59b6"></span><strong>[劫匪甲]</strong><span class="char-desc">30岁男性，身高175cm瘦削体型，面色蜡黄眼窝深陷，寸头戴黑色鸭舌帽，穿黑色连帽衫灰色运动裤，右手持折叠刀。</span></div>
+</div>
+</details>
+
+<details>
+  <summary>🏞️ 场景描述 (6)</summary>
+  <div class="section-body"><div class="scene-item"><strong>[2026实验室-夜]</strong><span class="scene-desc">大型AI公司顶层实验室，冷白色LED灯带环绕天花板，中央是服务器机柜阵列闪烁蓝绿指示灯，玻璃幕墙外是城市夜景万家灯火，一张长桌上散乱着笔记本电脑和技术文档，地面是灰色防静电地板。</span></div>
+<div class="scene-item"><strong>[出租屋-晨]</strong><span class="scene-desc">2021年城中村简陋出租屋，单人木板床铺着旧被子，折叠桌上放着一台老款ThinkPad笔记本和几本编程书，墙壁泛黄贴着租房合同，铁窗外透进清晨阳光，桌上手机亮着屏幕显示日期2021年3月15日。</span></div>
+<div class="scene-item"><strong>[咖啡厅-日]</strong><span class="scene-desc">大学城旁的普通咖啡厅，原木色桌椅暖黄灯光，墙上贴着手写菜单和校园活动海报，角落有书架，窗外是梧桐树和行人，桌上放着笔记本电脑和咖啡杯。</span></div>
+<div class="scene-item"><strong>[技术论坛会场-日]</strong><span class="scene-desc">大学报告厅，阶梯座位坐着几十人，前方投影幕布显示技术PPT，讲台上有话筒和电脑，侧面窗帘半拉透进日光。</span></div>
+<div class="scene-item"><strong>[街边小巷-夜]</strong><span class="scene-desc">城中村狭窄小巷，两侧是老旧居民楼墙面斑驳，头顶晾衣绳挂着衣物，唯一光源是远处路灯和居民楼窗户透出的暖光，地面湿滑有积水。</span></div>
+<div class="scene-item"><strong>[投资人办公室-日]</strong><span class="scene-desc">高档写字楼办公室，落地窗外是CBD天际线，深色实木桌配真皮转椅，桌上摆着茶具和商业杂志，墙上挂着书法"见微知著"。</span></div>
+</div>
+</details>
+
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 1</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [2026实验室-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span>, <span class="char-tag" style="color:#2ecc71">[赵鹏]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面左侧，站立，背靠服务器机柜，双手自然垂在身侧，视线面向<span class="char-tag" style="color:#2ecc71">[赵鹏]</span>。身穿黑色圆领T恤搭灰色休闲裤。</div><div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵鹏]</span>**: 画面右侧偏远处，站立于玻璃门旁，右手插在西装裤兜里，视线面向<span class="char-tag" style="color:#e74c3c">[李战]</span>，嘴角挂着淡笑。身穿深蓝西装。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>冷白灯光下的实验室，服务器机柜蓝绿指示灯闪烁，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>背靠机柜站立，额头有汗珠，双手微微颤抖，视线紧盯着对面的<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#2ecc71"</span></span>>[赵鹏]</span>。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#2ecc71"</span></span>>[赵鹏]</span>站在玻璃门旁，右手插兜，西装笔挺，嘴角弧度精准地维持着<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"遗憾"</span></span>的表情，但眼底没有任何温度。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#2ecc71"</span></span>>[赵鹏]</span>微微摇头叹气：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"李战啊，公司需要新的方向。董事会的决定，我也没办法。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 对切双人中景，平视，缓慢交替切换，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 2</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [2026实验室-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面中央，身体前倾靠在长桌边缘，左手撑桌面，右手攥着一份文件，视线低垂看向文件。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>低头看着手中的股权转让协议，纸张边缘被汗浸湿，上面赵鹏的签名墨迹已干——这份文件三个月前就准备好了。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>嘴唇微动，喉咙发出一声低哑的苦笑，右手将文件慢慢攥紧揉皱，抬起头，眼眶泛红但没有落泪。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>自言自语，声音沙哑：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"三年……我把命都搭进去了。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 俯拍特写文件→缓慢上摇至李战面部，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 3</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [2026实验室-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面中央偏右，倒在地面上，左手撑地试图支起身体，右手按着腹部，视线向上方。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>实验室灯光突然熄灭又亮起，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>腹部传来剧痛——咖啡里被下了东西。双腿发软跪倒在防静电地板上，左手撑地。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>右手按着腹部，手指抓紧T恤布料，额头抵着冰冷的地板，视线模糊中看到赵鹏的皮鞋一步步远离。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>意识消散前最后一个念头，低声呢喃：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"如果……能重来……"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 高角度俯拍→视线模糊虚化，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 4</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [出租屋-晨] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面中央，仰躺在木板床上，被子盖到胸口，双眼猛然睁开，右手下意识护住腹部，视线看向天花板。身穿灰色旧T恤。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>清晨阳光透过铁窗照在泛黄的墙壁上，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>猛然睁眼坐起，右手下意识捂住腹部——没有伤口，没有疼痛。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>快速低头检查双手，手指修长指关节粗大，但没有2026年实验室里的烧伤痕迹。呼吸急促，胸口剧烈起伏。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>猛地转头看向折叠桌上的手机，屏幕亮着：2021年3月15日，星期一。他的瞳孔骤然收缩。</div>
+
+  </div>
+  <div class="camera-line">🎥 贴面特写→快速拉远至中景→手机屏幕特写，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 5</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [出租屋-晨] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面左侧，坐在床沿，双脚踩地，左手拿着手机，右手搓着脸，视线看向手机屏幕。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>坐在床沿，双手颤抖着解锁手机，打开浏览器搜索<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"Transformer论文 2021"</span></span>——结果显示：尚未发表。心跳加速。</div>
+<div class="part-line"><span class="part-num">P2</span>再搜<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"比特币价格"</span></span>——38000美元。<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>嘴角抽搐了一下，深吸一口气，双手捂住脸，肩膀微微发抖。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>从指缝间露出一只眼睛看着屏幕，突然发出一声不可置信的笑：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"卧槽……三万八……还来得及。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 肩上景别看手机屏→面部特写→中景，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 6</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [出租屋-晨] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面中央，坐在折叠桌前的塑料凳上，双手快速敲打ThinkPad键盘，背部微驼，视线紧盯屏幕。身穿灰色旧T恤和黑色运动裤。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>洗了把脸坐到ThinkPad前，手指飞速敲击键盘，屏幕上代码一行行涌出——他在写一个2021年根本不该存在的AI模型架构。</div>
+<div class="part-line"><span class="part-num">P2</span>代码编辑器里的注释：# 这玩意2024年才被发明，我现在写出来算不算作弊？<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>嘴角微翘，但手上没停。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>边打字边自言自语：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"用2026年的记忆在2021年装逼……嗯，这确实是作弊。但谁让我活了两辈子呢。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 侧面中景看打字→屏幕特写代码→回到李战侧脸微笑，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 7</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [出租屋-晨] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧，站在窗前，右手扶着铁窗栏杆，视线透过窗户看向外面的城中村街道，左手垂在身侧攥拳。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>48小时后，demo完成。<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>站在窗前，看着城中村拥挤的屋顶和远处的写字楼天际线，右手握着窗栏杆指节发白。</div>
+<div class="part-line"><span class="part-num">P2</span>窗外传来小贩叫卖声和电动车喇叭声——2021年的声音，活着的声音。<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>闭上眼，深深吸了一口气。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>睁开眼，目光变得冷静而锐利，低声说：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"赵鹏，这一次，你的剧本由我来写。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 背影中景→侧面特写眼神变化，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 8</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [技术论坛会场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span>, <span class="char-tag" style="color:#3498db">[苏薇]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏薇]</span>**: 画面左侧，站在讲台旁，双手捧着笔记本电脑，视线看向投影幕布上的PPT，微微皱眉。身穿米白色oversized卫衣搭牛仔裤。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧后排座位，坐姿，右手托腮，视线面向讲台方向的<span class="char-tag" style="color:#3498db">[苏薇]</span>。身穿黑色拉链卫衣搭深色牛仔裤。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>大学技术论坛，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>站在讲台旁展示她的芯片架构论文，投影幕布上是密密麻麻的电路设计图，她微皱眉讲解时语速偏快。</div>
+<div class="part-line"><span class="part-num">P2</span>台下后排，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>右手托腮看着<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>，眼神复杂——上辈子，这个天才芯片设计师被赵鹏挖走后再也没出过成果。</div>
+<div class="part-line"><span class="part-num">P3</span>提问环节，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>举手，声音平静：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"你的RISC-V扩展指令集方案，如果结合近存计算架构，效率可以再提升40%。第三页那个分支预测的设计——非常优雅。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 台上苏薇中景→切后排李战中景→双人对望过肩景，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 9</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [技术论坛会场-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#3498db">[苏薇]</span>, <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏薇]</span>**: 画面中央偏左，站在讲台上，身体微微前倾，双手按在桌面上，视线穿过人群看向后排的<span class="char-tag" style="color:#e74c3c">[李战]</span>，眼睛睁大。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧远景，坐在后排座位上，双手交叉放在胸前，表情平淡。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>全场安静了两秒。<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>瞪大眼睛看向后排——近存计算架构的概念2023年才会成熟，这个人怎么会知道？</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>嘴唇微张，手指下意识攥紧了笔记本边缘，声音不自觉提高：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"你……你是研究什么方向的？"</span></span></div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>微微一笑，双手交叉放在胸前，语气随意：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"一个刚被裁的程序员，随便听听。"</span></span>台下传来几声轻笑。</div>
+
+  </div>
+  <div class="camera-line">🎥 苏薇正面特写震惊表情→切李战中景轻松姿态，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 10</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [咖啡厅-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span>, <span class="char-tag" style="color:#2ecc71">[赵鹏]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵鹏]</span>**: 画面左侧，坐在咖啡厅座位上，右手端咖啡杯，左手搭在桌面上，视线面向<span class="char-tag" style="color:#e74c3c">[李战]</span>，笑容满面。身穿深蓝修身西装浅蓝衬衫。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧，坐在对面，双手环抱咖啡杯，视线面向<span class="char-tag" style="color:#2ecc71">[赵鹏]</span>，面带温和微笑。身穿黑色拉链卫衣。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>咖啡厅里，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#2ecc71"</span></span>>[赵鹏]</span>笑容满面地坐在<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>对面，右手端着美式咖啡，银色手表在阳光下闪光：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"李战学弟！听说你在做AI？我认识几个投资人。"</span></span></div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>双手环抱自己的咖啡杯，面带温和微笑看着赵鹏——同样的开场白，上辈子也是从这杯咖啡开始的。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>内心独白：（这张脸，上辈子最后出现在我视线里的时候，是在实验室玻璃门的另一边。）嘴上却说：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"赵学长太客气了，刚好想找人聊聊。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 赵鹏正面中景→李战正面中景→桌面双人过肩景，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 11</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [咖啡厅-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#2ecc71">[赵鹏]</span>, <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#2ecc71">[赵鹏]</span>**: 画面左侧，坐姿，身体前倾，右手食指转着笔，视线面向<span class="char-tag" style="color:#e74c3c">[李战]</span>，表情热络。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧，坐姿，靠在椅背上，右手搅动咖啡勺，视线面向<span class="char-tag" style="color:#2ecc71">[赵鹏]</span>，嘴角挂着淡笑。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#2ecc71"</span></span>>[赵鹏]</span>身体前倾，食指习惯性转笔，压低声音：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"我跟你说实话，大模型这条赛道明年就要爆。你现在入局，时机刚好。"</span></span></div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>慢慢搅动咖啡勺，心里默算：（这句话的信息量是——他已经在布局了。上辈子他是2022年才找我的，这次提前了一年。有意思。）</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>抬眼看着赵鹏，微笑：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"赵学长眼光真好。"</span></span>内心独白：（你的眼光确实不错，上辈子挑了个好时机捅刀。这辈子——我得看看你还有什么新花样。）</div>
+
+  </div>
+  <div class="camera-line">🎥 赵鹏侧面特写→咖啡勺搅动特写→李战面部特写微笑但眼神锐利，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 12</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [街边小巷-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span>, <span class="char-tag" style="color:#3498db">[苏薇]</span>, <span class="char-tag" style="color:#9b59b6">[劫匪甲]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏薇]</span>**: 画面左侧，站立，双手紧抱胸前的挎包，后背贴着墙壁，视线面向<span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>，面部惊恐。身穿米白卫衣牛仔裤。</div><div class="ps-item">**<span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>**: 画面中央偏右，站立，右手持折叠刀指向<span class="char-tag" style="color:#3498db">[苏薇]</span>，身体前倾，视线面向<span class="char-tag" style="color:#3498db">[苏薇]</span>。</div><div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧远处，快步走来，视线面向<span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>背部。身穿黑色拉链卫衣。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>夜晚城中村小巷，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>双手紧抱挎包后背贴墙，面前<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#9b59b6"</span></span>>[劫匪甲]</span>举着折叠刀逼近，路灯光从巷口斜射进来。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>声音发抖：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"钱……钱包在包里，你自己拿……"</span></span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#9b59b6"</span></span>>[劫匪甲]</span>不耐烦地伸手去抓包带。</div>
+<div class="part-line"><span class="part-num">P3</span>一只手从侧面精准地扣住<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#9b59b6"</span></span>>[劫匪甲]</span>的手腕向外翻转——<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>不知何时出现在劫匪身后，动作干净利落没有多余。</div>
+
+  </div>
+  <div class="camera-line">🎥 苏薇惊恐正面→劫匪伸手→李战手部特写扣腕，快速剪辑节奏。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 13</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [街边小巷-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span>, <span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>, <span class="char-tag" style="color:#3498db">[苏薇]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面中央，站立，右脚踩住倒地的<span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>手腕，左手捡起地上的折叠刀合上放进口袋，视线低垂看向<span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>。</div><div class="ps-item">**<span class="char-tag" style="color:#9b59b6">[劫匪甲]</span>**: 画面下方，俯卧在地，右手手腕被踩住，面部朝侧，表情痛苦。</div><div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏薇]</span>**: 画面左侧背景，站立，双手捂嘴，视线面向<span class="char-tag" style="color:#e74c3c">[李战]</span>，眼睛圆睁。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>三秒。从扣腕到劫匪倒地只用了三秒。<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>右脚踩住劫匪手腕，左手拾起折叠刀啪地合上，整个过程面无表情。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#9b59b6"</span></span>>[劫匪甲]</span>痛得嗷嗷叫，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>低头看了他一眼，弯腰在他耳边低声说了什么——劫匪突然不叫了，脸色发白，连滚带爬跑了。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>双手捂嘴，瞪大眼睛看着<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>。她的电子手表在路灯下反光。</div>
+
+  </div>
+  <div class="camera-line">🎥 动作全景→李战低头耳语侧面特写→苏薇震惊特写，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 14</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [街边小巷-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span>, <span class="char-tag" style="color:#3498db">[苏薇]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面右侧，站立，右手挠后脑勺，表情尴尬，视线偏向左下方避开<span class="char-tag" style="color:#3498db">[苏薇]</span>的目光。</div><div class="ps-item">**<span class="char-tag" style="color:#3498db">[苏薇]</span>**: 画面左侧，站立，双臂抱胸，视线面向<span class="char-tag" style="color:#e74c3c">[李战]</span>，眉头微挑一脸不信。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>从震惊中回神，盯着<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>上下打量：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"你……你到底是干什么的？这身手不像程序员。"</span></span></div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>右手挠了挠后脑勺，露出一个略显尴尬的笑：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"别误会，我只是……健身房去多了。"</span></span></div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#3498db"</span></span>>[苏薇]</span>眉头微挑，双臂抱胸，表情写着<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"你说的每个字我都不信"</span></span>。小巷远处传来救护车的声音。</div>
+
+  </div>
+  <div class="camera-line">🎥 苏薇质疑正面中景→李战尴尬侧面中景→苏薇不信表情特写，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 15</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [投资人办公室-日] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#f39c12">[老周]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#f39c12">[老周]</span>**: 画面中央，坐在真皮转椅上，左手端茶杯，右手拿着手机看屏幕，视线面向手机，眉头紧锁。身穿灰色polo衫。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>CBD高档写字楼，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#f39c12"</span></span>>[老周]</span>坐在办公桌后端着紫砂杯喝茶，桌上手机震了一下——助理发来消息：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"周总，有个年轻人做了个AI demo，圈里在传。"</span></span></div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#f39c12"</span></span>>[老周]</span>放下茶杯，拿起手机点开技术分析报告，越看眉头皱得越紧——这个模型架构至少超前行业三到五年。</div>
+<div class="part-line"><span class="part-num">P3</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#f39c12"</span></span>>[老周]</span>自言自语：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"这小子从哪冒出来的……"</span></span>右手拇指快速打字回复：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"约他见面，越快越好。"</span></span></div>
+
+  </div>
+  <div class="camera-line">🎥 办公室全景→老周看手机中景→手机屏幕特写→老周面部特写，正常速度。</div>
+</div>
+
+<div class="segment-card">
+  <div class="segment-header">
+    <span class="segment-num">Segment 16</span>
+    <span class="segment-dur">≤15s</span>
+  </div>
+  <div class="segment-meta">📍 [出租屋-夜] &nbsp;|&nbsp; 👥 <span class="char-tag" style="color:#e74c3c">[李战]</span></div>
+  <details class="physical-state">
+<summary>📐 Physical State</summary>
+<div class="ps-item">**<span class="char-tag" style="color:#e74c3c">[李战]</span>**: 画面中央，坐在折叠桌前，左手撑着下巴，右手拿着手机，视线面向手机屏幕，面部被屏幕冷光照亮，表情从平静变为凝重。身穿灰色旧T恤。出租屋只有手机和窗外霓虹灯的光。</div>
+</details>
+  <div class="parts-container">
+    <div class="part-line"><span class="part-num">P1</span>深夜出租屋，<span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>坐在桌前复盘今天：AI demo已经在圈子里传开，苏薇的注意力已经拿到，赵鹏主动接触——一切按计划进行。</div>
+<div class="part-line"><span class="part-num">P2</span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>拿起手机准备关机，屏幕突然亮起一条匿名短信。来自未知号码，只有一行字。</div>
+<div class="part-line"><span class="part-num">P3</span>手机屏幕特写——短信内容：<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"你不是唯一一个回来的人。"</span></span><span class=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"char-tag"</span></span> style=<span class=<span class="dialogue">"dialogue"</span>><span class="dialogue">"color:#e74c3c"</span></span>>[李战]</span>拿手机的手僵住了，瞳孔骤缩，整个人定格在黑暗的出租屋里。</div>
+
+  </div>
+  <div class="camera-line">🎥 中景正面→手机屏幕微距特写→李战面部特写震惊表情，屏幕冷光照半脸，正常速度。</div>
+</div>
+
+
+</div>
+
+<script>
+// Auto-open first segment's physical state on load (optional interactivity)
+document.addEventListener('DOMContentLoaded', function() {
+  // Smooth scroll spy - highlight current segment
+  const cards = document.querySelectorAll('.segment-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.borderColor = 'rgba(88,166,255,0.5)';
+      } else {
+        e.target.style.borderColor = '';
+      }
+    });
+  }, { threshold: 0.3 });
+  cards.forEach(c => observer.observe(c));
+});
+</script>
+</body>
+</html>
